@@ -698,6 +698,11 @@ public class JaversBuilder extends AbstractContainerBuilder {
         return this;
     }
 
+    public JaversBuilder withCommitPkCacheDisabled(boolean isCommitPkCacheDisabled) {
+        configurationBuilder().withCommitPkCacheDisabled(isCommitPkCacheDisabled);
+        return this;
+    }
+
     /**
      * The <b>Initial Changes</b> switch, enabled by default since Javers 6.0.
      * <br/><br/>
@@ -911,7 +916,9 @@ public class JaversBuilder extends AbstractContainerBuilder {
         if (javersProperties.isUsePrimitiveDefaults() != null) {
             withUsePrimitiveDefaults(javersProperties.isUsePrimitiveDefaults());
         }
-
+        if (javersProperties.isCommitPkCacheDisabled() != null) {
+            withCommitPkCacheDisabled(javersProperties.isCommitPkCacheDisabled());
+        }
         withPrettyPrintDateFormats(javersProperties.getPrettyPrintDateFormats());
         return this;
     }

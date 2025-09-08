@@ -1,5 +1,6 @@
 package org.javers.core.commit
 
+import org.javers.core.CoreConfiguration
 import spock.lang.Specification
 
 /**
@@ -8,8 +9,11 @@ import spock.lang.Specification
 class CommitSeqGeneratorTest extends Specification {
 
     def "should return 1.0 when first commit"() {
+        given:
+        def config = Stub(CoreConfiguration)
+        
         when:
-        def gen1 = new CommitSeqGenerator().nextId(null)
+        def gen1 = new CommitSeqGenerator(config).nextId(null)
 
         then:
         gen1.value() == "1.00"
@@ -18,7 +22,8 @@ class CommitSeqGeneratorTest extends Specification {
     def "should inc minor and assign 0 to minor when seq calls"() {
         given:
         def head = new CommitId(1,5)
-        def commitSeqGenerator = new CommitSeqGenerator()
+        def config = Stub(CoreConfiguration)
+        def commitSeqGenerator = new CommitSeqGenerator(config)
 
         when:
         def gen1 = commitSeqGenerator.nextId(head)
@@ -35,7 +40,8 @@ class CommitSeqGeneratorTest extends Specification {
 
     def "should inc minor when the same head"() {
         given:
-        def commitSeqGenerator = new CommitSeqGenerator()
+        def config = Stub(CoreConfiguration)
+        def commitSeqGenerator = new CommitSeqGenerator(config)
         def commit1 = commitSeqGenerator.nextId(null)     //1.0
         def commit2 = commitSeqGenerator.nextId(commit1)  //2.0
 
@@ -48,7 +54,8 @@ class CommitSeqGeneratorTest extends Specification {
 
     def "should provide chronological ordering for commitIds"() {
         given:
-        def commitSeqGenerator = new CommitSeqGenerator()
+        def config = Stub(CoreConfiguration)
+        def commitSeqGenerator = new CommitSeqGenerator(config)
         def head = commitSeqGenerator.nextId(null)
 
         when:
@@ -66,5 +73,23 @@ class CommitSeqGeneratorTest extends Specification {
             assert commits[it].isBeforeOrEqual(commits[it])
             assert commits[it].isBeforeOrEqual(commits[it + 1])
         }
+    }
+    
+    def "should not use cache when commitPkCache is disabled"() {
+        given:
+        def config = Stub(CoreConfiguration)
+        config.isCommitPkCacheDisabled() >> true
+        def commitSeqGenerator = new CommitSeqGenerator(config)
+        def head = new CommitId(1,5)
+
+        when:
+        def gen1 = commitSeqGenerator.nextId(head)
+        def gen2 = commitSeqGenerator.nextId(head)
+        def gen3 = commitSeqGenerator.nextId(gen2)
+
+        then:
+        gen1 == new CommitId(2,0)
+        gen2 == new CommitId(2,0)
+        gen3 == new CommitId(3,0)
     }
 }

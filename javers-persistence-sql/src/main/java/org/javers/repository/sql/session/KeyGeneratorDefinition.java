@@ -1,8 +1,10 @@
 package org.javers.repository.sql.session;
 
+import org.javers.repository.sql.SqlRepositoryConfiguration;
+
 interface KeyGeneratorDefinition {
 
-    KeyGenerator createKeyGenerator();
+    KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration);
 
     interface SequenceDefinition extends KeyGeneratorDefinition {
         String nextFromSequenceAsSQLExpression(String seqName);
@@ -12,8 +14,8 @@ interface KeyGeneratorDefinition {
         }
 
         @Override
-        default KeyGenerator createKeyGenerator() {
-            return new KeyGenerator.SequenceAllocation(this);
+        default KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration) {
+            return new KeyGenerator.SequenceAllocation(this, sqlRepositoryConfiguration);
         }
     }
 
@@ -21,7 +23,7 @@ interface KeyGeneratorDefinition {
         String lastInsertedAutoincrement();
 
         @Override
-        default KeyGenerator createKeyGenerator() {
+        default KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration) {
             return new KeyGenerator.AutoincrementGenerator(this);
         }
     }

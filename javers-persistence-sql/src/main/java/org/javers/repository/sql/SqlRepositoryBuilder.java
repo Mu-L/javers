@@ -26,6 +26,7 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
 
     private String schemaName;
     private boolean globalIdCacheDisabled;
+    private boolean commitPkCacheDisabled;
     private boolean schemaManagementEnabled = true;
 
     private String globalIdTableName;
@@ -80,6 +81,11 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
      */
     public SqlRepositoryBuilder withGlobalIdCacheDisabled(boolean globalIdCacheDisabled) {
         this.globalIdCacheDisabled = globalIdCacheDisabled;
+        return this;
+    }
+
+    public SqlRepositoryBuilder withCommitPkCacheDisabled(boolean commitPkCacheDisabled) {
+        this.commitPkCacheDisabled = commitPkCacheDisabled;
         return this;
     }
 
@@ -143,10 +149,12 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
         logger.info("  dialect:                  {}", dialectName);
         logger.info("  schemaManagementEnabled:  {}", schemaManagementEnabled);
         logger.info("  schema name:              {}", schemaName);
+        logger.info("  globalIdCacheDisabled:    {}", globalIdCacheDisabled);
+        logger.info("  commitPkCacheDisabled:    {}", commitPkCacheDisabled);
         bootContainer();
 
         SqlRepositoryConfiguration config =
-                new SqlRepositoryConfiguration(globalIdCacheDisabled, schemaName, schemaManagementEnabled,
+                new SqlRepositoryConfiguration(globalIdCacheDisabled, commitPkCacheDisabled, schemaName, schemaManagementEnabled,
                         globalIdTableName, commitTableName, snapshotTableName, commitPropertyTableName,
                         globalIdSequenceName, commitSequenceName, snapshotSequenceName);
         addComponent(config);
@@ -154,7 +162,7 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
         PolyJDBC polyJDBC = PolyJDBCBuilder.polyJDBC(dialectName.getPolyDialect(), config.getSchemaName())
                 .usingManagedConnections(() -> connectionProvider.getConnection()).build();
 
-        SessionFactory sessionFactory = new SessionFactory(dialectName, connectionProvider);
+        SessionFactory sessionFactory = new SessionFactory(dialectName, connectionProvider, config);
 
         addComponent(polyJDBC);
         addComponent(sessionFactory);

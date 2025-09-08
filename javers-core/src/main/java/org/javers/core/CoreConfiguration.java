@@ -25,12 +25,14 @@ public class CoreConfiguration {
 
     private final boolean usePrimitiveDefaults;
 
+    private final boolean commitPkCacheDisabled;
+
     private final CommitIdGenerator commitIdGenerator;
 
     private final Supplier<CommitId> customCommitIdGenerator;
 
     CoreConfiguration(PrettyValuePrinter prettyValuePrinter, MappingStyle mappingStyle, ListCompareAlgorithm listCompareAlgorithm, boolean initialChanges, CommitIdGenerator commitIdGenerator, Supplier<CommitId> customCommitIdGenerator, boolean terminalChanges, boolean prettyPrint,
-            boolean usePrimitiveDefaults) {
+            boolean usePrimitiveDefaults, boolean commitPkCacheDisabled) {
         this.prettyValuePrinter = prettyValuePrinter;
         this.mappingStyle = mappingStyle;
         this.listCompareAlgorithm = listCompareAlgorithm;
@@ -40,6 +42,7 @@ public class CoreConfiguration {
         this.terminalChanges = terminalChanges;
         this.prettyPrint = prettyPrint;
         this.usePrimitiveDefaults = usePrimitiveDefaults;
+        this.commitPkCacheDisabled = commitPkCacheDisabled;
     }
 
     public PrettyValuePrinter getPrettyValuePrinter() {
@@ -76,5 +79,9 @@ public class CoreConfiguration {
 
     public boolean isPrettyPrint() {
         return prettyPrint;
+    }
+
+    public boolean isCommitPkCacheDisabled() {
+        return commitPkCacheDisabled;
     }
 }

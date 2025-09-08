@@ -20,6 +20,15 @@ public abstract class JaversCoreProperties {
     private String packagesToScan = "";
     private PrettyPrintDateFormats prettyPrintDateFormats = new PrettyPrintDateFormats();
     private Boolean usePrimitiveDefaults;
+    private Boolean commitPkCacheDisabled;
+
+    public Boolean isCommitPkCacheDisabled() {
+        return commitPkCacheDisabled;
+    }
+
+    public void setCommitPkCacheDisabled(Boolean commitPkCacheDisabled) {
+        this.commitPkCacheDisabled = commitPkCacheDisabled;
+    }
 
     public String getAlgorithm() {
         return algorithm;

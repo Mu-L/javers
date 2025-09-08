@@ -1,5 +1,6 @@
 package org.javers.repository.sql.session;
 
+import org.javers.repository.sql.SqlRepositoryConfiguration;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.AutoincrementDefinition;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.SequenceDefinition;
 
@@ -20,6 +21,7 @@ interface KeyGenerator {
     void reset();
 
     class SequenceAllocation implements KeyGenerator {
+        private final boolean disableCache;
 
         private final Object lock = new Object();
 
@@ -29,8 +31,9 @@ interface KeyGenerator {
 
         private ThreadLocal<Long> lastKey = new ThreadLocal<>();
 
-        SequenceAllocation(SequenceDefinition sequenceDefinition) {
+        SequenceAllocation(SequenceDefinition sequenceDefinition, SqlRepositoryConfiguration sqlConfig) {
             this.sequenceDefinition = sequenceDefinition;
+            this.disableCache = sqlConfig.isCommitPkCacheDisabled();
         }
 
         String nextFromSequenceAsSQLExpression(String seqName) {
@@ -39,7 +42,7 @@ interface KeyGenerator {
 
         @Override
         public long generateKey(String sequenceName, Session session) {
-            long nextVal = findSequence(sequenceName).nextValue(session);
+            long nextVal = findSequence(sequenceName).nextValue(session, disableCache);
             lastKey.set(nextVal);
             return nextVal;
         }

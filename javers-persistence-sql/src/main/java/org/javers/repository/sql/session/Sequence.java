@@ -22,8 +22,8 @@ final class Sequence {
         this.sequenceGenerator = sequenceGenerator;
     }
 
-    synchronized long nextValue(Session session) {
-        if (recalculationNeeded()) {
+    synchronized long nextValue(Session session, boolean isCacheDisabled) {
+        if (recalculationNeeded() || isCacheDisabled) {
             long currentSequenceValue = session.executeQueryForLong(
                     new Select("SELECT next from seq "+ sequenceName,
                             sequenceGenerator.nextFromSequenceAsSelect(sequenceName)));

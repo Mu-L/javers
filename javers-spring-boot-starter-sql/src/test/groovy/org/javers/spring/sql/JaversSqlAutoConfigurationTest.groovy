@@ -55,6 +55,7 @@ class JaversSqlAutoConfigurationTest extends Specification {
         javersProperties.sqlSchema == "test"
         javersProperties.sqlSchemaManagementEnabled
         javersProperties.sqlGlobalIdCacheDisabled
+        javersProperties.sqlCommitPkCacheDisabled
         javersProperties.objectAccessHook == "org.javers.spring.boot.DummySqlObjectAccessHook"
         javersProperties.sqlGlobalIdTableName == "cust_jv_global_id"
         javersProperties.sqlCommitTableName == "cust_jv_commit"

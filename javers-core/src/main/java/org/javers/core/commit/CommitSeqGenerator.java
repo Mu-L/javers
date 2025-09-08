@@ -7,11 +7,22 @@ package org.javers.core.commit;
  * @see DistributedCommitSeqGenerator
  * @author bartosz walacik
  */
+import org.javers.core.CoreConfiguration;
+
 class CommitSeqGenerator {
+    private final CoreConfiguration javersCoreConfiguration;
     private HandedOutIds handedOut = new HandedOutIds();
+
+    CommitSeqGenerator(CoreConfiguration javersCoreConfiguration) {
+        this.javersCoreConfiguration = javersCoreConfiguration;
+    }
 
     synchronized CommitId nextId(CommitId head)
     {
+        if (javersCoreConfiguration.isCommitPkCacheDisabled()) {
+            return new CommitId(getHeadMajorId(head) + 1, 0);
+        }
+
         Long major = getHeadMajorId(head) + 1;
 
         CommitId lastReturned = handedOut.get(major);
