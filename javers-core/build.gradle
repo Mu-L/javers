@@ -8,6 +8,7 @@ java {
 dependencies {
     api "org.slf4j:slf4j-api:$slf4jApiVersion"
     api "com.google.code.gson:gson:$gsonVersion"
+    api "com.google.code.findbugs:jsr305:3.0.2"
     implementation 'org.picocontainer:picocontainer:2.15'
     implementation "io.github.classgraph:classgraph:$classgraphVersion"
 
