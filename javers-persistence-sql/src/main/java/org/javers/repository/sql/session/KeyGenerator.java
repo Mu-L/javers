@@ -2,7 +2,6 @@ package org.javers.repository.sql.session;
 
 import org.javers.common.exception.JaversException;
 import org.javers.common.exception.JaversExceptionCode;
-import org.javers.repository.sql.SqlRepositoryConfiguration;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.AutoincrementDefinition;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.SequenceDefinition;
 

@@ -2,8 +2,6 @@ package org.javers.repository.sql.session;
 
 import org.javers.repository.sql.SqlRepositoryConfiguration;
 
-import static org.javers.repository.sql.session.Sequence.SEQUENCE_ALLOCATION_SIZE;
-
 interface KeyGeneratorDefinition {
 
     KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration);
