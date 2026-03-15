@@ -32,10 +32,13 @@ public class H2RepositoryBuilder {
         return conn;
     }
 
-
     public JaversSqlRepository build() {
+        return this.build("test");
+    }
+
+    public JaversSqlRepository build(String dbName) {
         try {
-            conn = DriverManager.getConnection("jdbc:h2:mem:test;");
+            conn = DriverManager.getConnection("jdbc:h2:mem:"+dbName+";");
 
             return sqlRepository.
                     withConnectionProvider(() -> conn).

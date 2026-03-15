@@ -10,7 +10,7 @@ class SequenceAllocationTest extends Specification {
     def "should allocate sequence values in batches with default settings"() {
         given:
         def repositoryBuilder = new H2RepositoryBuilder()
-        def sqlRepository = repositoryBuilder.build()
+        def sqlRepository = repositoryBuilder.build("SequenceAllocationTest")
         def conn = repositoryBuilder.conn
         def tableNames = new TableNameProvider(sqlRepository.configuration)
 
@@ -23,9 +23,13 @@ class SequenceAllocationTest extends Specification {
         javers.commit("author", new SnapshotEntity(id: 2, intProperty: 2))
 
         then:
-        queryPks(conn, tableNames.commitTableNameWithSchema,   "commit_pk")    ==       [100L, 101L]
-        queryPks(conn, tableNames.snapshotTableNameWithSchema, "snapshot_pk")  ==       [100L, 200L]
-        queryPks(conn, tableNames.globalIdTableNameWithSchema, "global_id_pk") ==       [100L, 101L]
+        def commitPks   = queryPks(conn, tableNames.commitTableNameWithSchema,   "commit_pk")
+        def snapshotPks = queryPks(conn, tableNames.snapshotTableNameWithSchema, "snapshot_pk")
+        def globalIdPks = queryPks(conn, tableNames.globalIdTableNameWithSchema, "global_id_pk")
+
+        commitPks[1]   - commitPks[0]   == 1L    // same pre-allocated batch
+        snapshotPks[1] - snapshotPks[0] == 100L  // snapshot always direct-calls sequence
+        globalIdPks[1] - globalIdPks[0] == 1L    // same pre-allocated batch
 
         cleanup:
         conn.close()
@@ -36,7 +40,7 @@ class SequenceAllocationTest extends Specification {
         def repositoryBuilder = new H2RepositoryBuilder()
         def sqlRepository = repositoryBuilder
                     .withSequenceAllocationEnabled(false)
-                    .build()
+                    .build("SequenceAllocationTest")
         def conn = repositoryBuilder.conn
         def tableNames = new TableNameProvider(sqlRepository.configuration)
 
@@ -49,9 +53,13 @@ class SequenceAllocationTest extends Specification {
         javers.commit("author", new SnapshotEntity(id: 2, intProperty: 2))
 
         then:
-        queryPks(conn, tableNames.commitTableNameWithSchema,   "commit_pk")    == [100L, 200L]
-        queryPks(conn, tableNames.snapshotTableNameWithSchema, "snapshot_pk")  == [100L, 200L]
-        queryPks(conn, tableNames.globalIdTableNameWithSchema, "global_id_pk") == [100L, 200L]
+        def commitPks   = queryPks(conn, tableNames.commitTableNameWithSchema,   "commit_pk")
+        def snapshotPks = queryPks(conn, tableNames.snapshotTableNameWithSchema, "snapshot_pk")
+        def globalIdPks = queryPks(conn, tableNames.globalIdTableNameWithSchema, "global_id_pk")
+
+        commitPks[1]   - commitPks[0]   == 100L  // each insert fetches fresh NEXTVAL × 100
+        snapshotPks[1] - snapshotPks[0] == 100L  // same as always
+        globalIdPks[1] - globalIdPks[0] == 100L  // each insert fetches fresh NEXTVAL × 100
 
 
         cleanup:

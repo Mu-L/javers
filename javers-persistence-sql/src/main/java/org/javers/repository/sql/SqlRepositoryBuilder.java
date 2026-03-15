@@ -86,7 +86,7 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
 
     /**
      * Controls whether JaVers uses Sequence Allocation (batched pre-fetching) when generating
-     * primary keys for the {@code jv_commit} and {@code jv_global_id} tables.
+     * primary keys for the {@code jv_commit} and {@code jv_global_id} tables.<br/>
      * Enabled by default.
      * <br/><br/>
      *
