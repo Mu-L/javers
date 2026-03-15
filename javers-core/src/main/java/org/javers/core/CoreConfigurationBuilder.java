@@ -22,8 +22,6 @@ class CoreConfigurationBuilder {
 
     private boolean usePrimitiveDefaults = true;
 
-    private Boolean commitPkCacheDisabled = false;
-
     private CommitIdGenerator commitIdGenerator = CommitIdGenerator.SYNCHRONIZED_SEQUENCE;
 
     private Supplier<CommitId> customCommitIdGenerator;
@@ -45,8 +43,7 @@ class CoreConfigurationBuilder {
                 customCommitIdGenerator,
                 terminalChanges,
                 prettyPrint,
-                usePrimitiveDefaults,
-                commitPkCacheDisabled
+                usePrimitiveDefaults
         );
     }
 
@@ -88,11 +85,6 @@ class CoreConfigurationBuilder {
 
     CoreConfigurationBuilder withUsePrimitiveDefaults(boolean usePrimitiveDefaults) {
         this.usePrimitiveDefaults = usePrimitiveDefaults;
-        return this;
-    }
-
-    CoreConfigurationBuilder withCommitPkCacheDisabled(boolean commitPkCacheDisabled) {
-        this.commitPkCacheDisabled = commitPkCacheDisabled;
         return this;
     }
 

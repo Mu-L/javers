@@ -9,7 +9,7 @@ import org.polyjdbc.core.exception.SequenceLimitReachedException;
  * @author Adam Dubiel
  */
 final class Sequence {
-    private static final long SEQUENCE_ALLOCATION_SIZE = 100;
+    static final long SEQUENCE_ALLOCATION_SIZE = 100;
 
     private final String sequenceName;
     private final SequenceDefinition sequenceGenerator;
@@ -22,8 +22,8 @@ final class Sequence {
         this.sequenceGenerator = sequenceGenerator;
     }
 
-    synchronized long nextValue(Session session, boolean isCacheDisabled) {
-        if (recalculationNeeded() || isCacheDisabled) {
+    synchronized long nextValue(Session session) {
+        if (recalculationNeeded()) {
             long currentSequenceValue = session.executeQueryForLong(
                     new Select("SELECT next from seq "+ sequenceName,
                             sequenceGenerator.nextFromSequenceAsSelect(sequenceName)));

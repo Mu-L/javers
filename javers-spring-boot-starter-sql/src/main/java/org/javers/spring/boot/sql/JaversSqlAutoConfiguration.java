@@ -80,7 +80,7 @@ public class JaversSqlAutoConfiguration {
                 .withDialect(javersSqlDialectName())
                 .withSchemaManagementEnabled(javersSqlProperties.isSqlSchemaManagementEnabled())
                 .withGlobalIdCacheDisabled(javersSqlProperties.isSqlGlobalIdCacheDisabled())
-                .withCommitPkCacheDisabled(javersSqlProperties.isSqlCommitPkCacheDisabled())
+                .withSequenceAllocationEnabled(javersSqlProperties.isSqlSequenceAllocationEnabled())
                 .withGlobalIdTableName(javersSqlProperties.getSqlGlobalIdTableName())
                 .withCommitTableName(javersSqlProperties.getSqlCommitTableName())
                 .withSnapshotTableName(javersSqlProperties.getSqlSnapshotTableName())

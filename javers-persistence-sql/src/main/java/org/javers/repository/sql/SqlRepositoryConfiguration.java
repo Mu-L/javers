@@ -9,7 +9,7 @@ import org.javers.common.validation.Validate;
  */
 public class SqlRepositoryConfiguration {
     private final boolean globalIdCacheDisabled;
-    private final boolean commitPkCacheDisabled;
+    private final boolean sequenceAllocationEnabled;
     private final String schemaName;
     private final boolean schemaManagementEnabled;
 
@@ -22,7 +22,7 @@ public class SqlRepositoryConfiguration {
     private final String commitSequenceName;
     private final String snapshotSequenceName;
 
-    SqlRepositoryConfiguration(boolean globalIdCacheDisabled, boolean commitPkCacheDisabled, String schemaName,
+    SqlRepositoryConfiguration(boolean globalIdCacheDisabled, boolean sequenceAllocationEnabled, String schemaName,
                                boolean schemaManagementEnabled, String globalIdTableName,
                                String commitTableName, String snapshotTableName, String commitPropertyTableName,
                                String globalIdSequenceName, String commitSequenceName, String snapshotSequenceName
@@ -30,7 +30,7 @@ public class SqlRepositoryConfiguration {
         Validate.argumentCheck(schemaName == null || !schemaName.isEmpty(),"schemaName should be null or non-empty");
 
         this.globalIdCacheDisabled = globalIdCacheDisabled;
-        this.commitPkCacheDisabled = commitPkCacheDisabled;
+        this.sequenceAllocationEnabled = sequenceAllocationEnabled;
         this.schemaName = schemaName;
         this.schemaManagementEnabled = schemaManagementEnabled;
         this.globalIdTableName = globalIdTableName;
@@ -46,8 +46,8 @@ public class SqlRepositoryConfiguration {
         return globalIdCacheDisabled;
     }
 
-    public boolean isCommitPkCacheDisabled() {
-        return commitPkCacheDisabled;
+    public boolean isSequenceAllocationEnabled() {
+        return sequenceAllocationEnabled;
     }
 
     /**

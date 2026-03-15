@@ -2,6 +2,8 @@ package org.javers.repository.sql.session;
 
 import org.javers.repository.sql.SqlRepositoryConfiguration;
 
+import static org.javers.repository.sql.session.Sequence.SEQUENCE_ALLOCATION_SIZE;
+
 interface KeyGeneratorDefinition {
 
     KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration);
@@ -15,7 +17,10 @@ interface KeyGeneratorDefinition {
 
         @Override
         default KeyGenerator createKeyGenerator(SqlRepositoryConfiguration sqlRepositoryConfiguration) {
-            return new KeyGenerator.SequenceAllocation(this, sqlRepositoryConfiguration);
+            if (!sqlRepositoryConfiguration.isSequenceAllocationEnabled()){
+                return new KeyGenerator.SequenceDirectCall(this);
+            }
+            return new KeyGenerator.SequenceAllocation(this);
         }
     }
 
