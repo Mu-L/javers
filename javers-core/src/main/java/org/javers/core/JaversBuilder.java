@@ -53,7 +53,6 @@ import org.javers.shadow.ShadowModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -484,7 +483,7 @@ public class JaversBuilder extends AbstractContainerBuilder {
             }
 
             @Override
-            public String toString(@Nonnull T value) {
+            public String toString(T value) {
                 return toStringFunction.apply(value);
             }
         });
@@ -512,7 +511,7 @@ public class JaversBuilder extends AbstractContainerBuilder {
             }
 
             @Override
-            public String toString(@Nonnull T value) {
+            public String toString(T value) {
                 return value.toString();
             }
         });
