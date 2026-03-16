@@ -11,6 +11,7 @@ javers:
   commitIdGenerator: random
   packagesToScan: my.company.domain.person, my.company.domain.finance
   sqlGlobalIdCacheDisabled: true
+  sqlSequenceAllocationEnabled: false
   auditableAspectEnabled: false
   springDataAuditableRepositoryAspectEnabled: false
   prettyPrintDateFormats:

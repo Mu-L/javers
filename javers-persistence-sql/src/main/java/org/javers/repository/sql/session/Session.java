@@ -66,7 +66,7 @@ public class Session implements AutoCloseable {
         Validate.argumentsAreNotNull(queryName, parameters, tableName);
 
         if (dialect.supportsSequences() && sequenceName != null) {
-            String nextFromSequenceExpression = ((SequenceAllocation) keyGenerator).nextFromSequenceAsSQLExpression(sequenceName);
+            String nextFromSequenceExpression = ((KeyGenerator.SequenceBasedGenerator) keyGenerator).nextFromSequenceAsSQLExpression(sequenceName);
 
             Insert insertQuery = new Insert(
                     queryName,

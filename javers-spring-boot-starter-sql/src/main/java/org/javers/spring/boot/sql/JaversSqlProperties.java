@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "javers")
 public class JaversSqlProperties extends JaversSpringProperties {
     private static final String DEFAULT_OBJECT_ACCESS_HOOK = HibernateUnproxyObjectAccessHook.class.getName();
-
     private boolean sqlSchemaManagementEnabled = true;
     private boolean sqlGlobalIdCacheDisabled = false;
+    private boolean sqlSequenceAllocationEnabled = true;
     private String sqlSchema;
     private String sqlGlobalIdTableName;
     private String sqlCommitTableName;
@@ -42,6 +42,14 @@ public class JaversSqlProperties extends JaversSpringProperties {
 
     public void setSqlGlobalIdCacheDisabled(boolean sqlGlobalIdCacheDisabled) {
         this.sqlGlobalIdCacheDisabled = sqlGlobalIdCacheDisabled;
+    }
+
+    public boolean isSqlSequenceAllocationEnabled() {
+        return sqlSequenceAllocationEnabled;
+    }
+
+    public void setSqlSequenceAllocationEnabled(boolean sqlSequenceAllocationEnabled) {
+        this.sqlSequenceAllocationEnabled = sqlSequenceAllocationEnabled;
     }
 
     protected String defaultObjectAccessHook(){

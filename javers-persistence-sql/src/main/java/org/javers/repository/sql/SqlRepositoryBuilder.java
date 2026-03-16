@@ -26,6 +26,7 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
 
     private String schemaName;
     private boolean globalIdCacheDisabled;
+    private boolean sequenceAllocationEnabled = true;
     private boolean schemaManagementEnabled = true;
 
     private String globalIdTableName;
@@ -80,6 +81,39 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
      */
     public SqlRepositoryBuilder withGlobalIdCacheDisabled(boolean globalIdCacheDisabled) {
         this.globalIdCacheDisabled = globalIdCacheDisabled;
+        return this;
+    }
+
+    /**
+     * Controls whether JaVers uses Sequence Allocation (batched pre-fetching) when generating
+     * primary keys for the {@code jv_commit} and {@code jv_global_id} tables.<br/>
+     * Enabled by default.
+     * <br/><br/>
+     *
+     * <b>When enabled</b>, JaVers fetches the next DB sequence value once and then hands
+     * out a pre-allocated block of {@code 100} consecutive PKs locally, hitting the database
+     * only when the block is exhausted. This is efficient for single-database deployments.
+     * <br/><br/>
+     *
+     * <b>When disabled</b>, JaVers calls the DB sequence next value on every insert.
+     * This approach is required in:
+     * <ul>
+     * <li>
+     *     multi-tenant setups where a single JaVers instance connects to
+     *     different databases at runtime,
+     * </li>
+     * <li>
+     *     or in any situation where the DB sequence might be reset or jump backwards (e.g. after a restore from backup).
+     * </li>
+     * </ul>
+     *
+     * See the Javadoc of {@link org.javers.repository.sql.session.Sequence} for known limitations of the Sequence Allocation strategy.
+     *
+     * @param sequenceAllocationEnabled {@code false} to disable batched pre-fetching and call the
+     *                                  DB sequence on every commit
+     */
+    public SqlRepositoryBuilder withSequenceAllocationEnabled(boolean sequenceAllocationEnabled) {
+        this.sequenceAllocationEnabled = sequenceAllocationEnabled;
         return this;
     }
 
@@ -143,10 +177,12 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
         logger.info("  dialect:                  {}", dialectName);
         logger.info("  schemaManagementEnabled:  {}", schemaManagementEnabled);
         logger.info("  schema name:              {}", schemaName);
+        logger.info("  globalIdCacheDisabled:    {}", globalIdCacheDisabled);
+        logger.info("  sequenceAllocationEnabled: {}", sequenceAllocationEnabled);
         bootContainer();
 
         SqlRepositoryConfiguration config =
-                new SqlRepositoryConfiguration(globalIdCacheDisabled, schemaName, schemaManagementEnabled,
+                new SqlRepositoryConfiguration(globalIdCacheDisabled, sequenceAllocationEnabled, schemaName, schemaManagementEnabled,
                         globalIdTableName, commitTableName, snapshotTableName, commitPropertyTableName,
                         globalIdSequenceName, commitSequenceName, snapshotSequenceName);
         addComponent(config);
@@ -154,7 +190,7 @@ public class SqlRepositoryBuilder extends AbstractContainerBuilder {
         PolyJDBC polyJDBC = PolyJDBCBuilder.polyJDBC(dialectName.getPolyDialect(), config.getSchemaName())
                 .usingManagedConnections(() -> connectionProvider.getConnection()).build();
 
-        SessionFactory sessionFactory = new SessionFactory(dialectName, connectionProvider);
+        SessionFactory sessionFactory = new SessionFactory(dialectName, connectionProvider, config);
 
         addComponent(polyJDBC);
         addComponent(sessionFactory);

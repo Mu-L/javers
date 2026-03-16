@@ -12,6 +12,7 @@ import java.sql.SQLException;
 public class H2RepositoryBuilder {
 
     private final SqlRepositoryBuilder sqlRepository;
+    private Connection conn;
 
     public H2RepositoryBuilder() {
         sqlRepository = SqlRepositoryBuilder.sqlRepository();
@@ -22,9 +23,22 @@ public class H2RepositoryBuilder {
         return this;
     }
 
+    public H2RepositoryBuilder withSequenceAllocationEnabled(boolean sequenceAllocationEnabled) {
+        sqlRepository.withSequenceAllocationEnabled(sequenceAllocationEnabled);
+        return this;
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
+
     public JaversSqlRepository build() {
+        return this.build("test");
+    }
+
+    public JaversSqlRepository build(String dbName) {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:h2:mem:test;");
+            conn = DriverManager.getConnection("jdbc:h2:mem:"+dbName+";");
 
             return sqlRepository.
                     withConnectionProvider(() -> conn).

@@ -1,10 +1,14 @@
 package org.javers.repository.sql.session;
 
+import org.javers.common.exception.JaversException;
+import org.javers.common.exception.JaversExceptionCode;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.AutoincrementDefinition;
 import org.javers.repository.sql.session.KeyGeneratorDefinition.SequenceDefinition;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.javers.repository.sql.session.Sequence.SEQUENCE_ALLOCATION_SIZE;
 
 /**
  * forked from org.polyjdbc.core.key.KeyGenerator
@@ -19,22 +23,52 @@ interface KeyGenerator {
 
     void reset();
 
-    class SequenceAllocation implements KeyGenerator {
+    abstract class SequenceBasedGenerator implements KeyGenerator {
+        protected final SequenceDefinition sequenceDefinition;
 
+        SequenceBasedGenerator(SequenceDefinition sequenceDefinition) {
+            this.sequenceDefinition = sequenceDefinition;
+        }
+
+        String nextFromSequenceAsSQLExpression(String seqName) {
+            return sequenceDefinition.nextFromSequenceAsSQLExpression(seqName);
+        }
+    }
+
+    class SequenceDirectCall extends SequenceBasedGenerator {
+
+        SequenceDirectCall(SequenceDefinition sequenceDefinition) {
+            super(sequenceDefinition);
+        }
+
+        @Override
+        public long generateKey(String sequenceName, Session session) {
+            return  SEQUENCE_ALLOCATION_SIZE * // multiplying by allocation size is to avoid collisions with SequenceAllocation strategy
+                    session.executeQueryForLong(
+                    new Select("SELECT next from seq "+ sequenceName,
+                            sequenceDefinition.nextFromSequenceAsSelect(sequenceName)));
+        }
+
+        @Override
+        public long getKeyFromLastInsert(Session session) {
+            throw new JaversException(JaversExceptionCode.NOT_IMPLEMENTED);
+        }
+
+        @Override
+        public void reset() {
+
+        }
+    }
+
+    class SequenceAllocation extends SequenceBasedGenerator {
         private final Object lock = new Object();
-
-        private final SequenceDefinition sequenceDefinition;
 
         private Map<String, Sequence> sequences = new ConcurrentHashMap();
 
         private ThreadLocal<Long> lastKey = new ThreadLocal<>();
 
         SequenceAllocation(SequenceDefinition sequenceDefinition) {
-            this.sequenceDefinition = sequenceDefinition;
-        }
-
-        String nextFromSequenceAsSQLExpression(String seqName) {
-            return sequenceDefinition.nextFromSequenceAsSQLExpression(seqName);
+            super(sequenceDefinition);
         }
 
         @Override
