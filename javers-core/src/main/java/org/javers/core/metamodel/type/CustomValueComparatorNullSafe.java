@@ -31,7 +31,7 @@ class CustomValueComparatorNullSafe<T> implements CustomValueComparator<T> {
 
     @Override
     public String toString(T value) {
-        if (value == null) {
+        if (value == null || value == MissingProperty.INSTANCE) {
             return "";
         }
         return delegate.toString(value);
