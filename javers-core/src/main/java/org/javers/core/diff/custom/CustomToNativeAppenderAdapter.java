@@ -26,22 +26,10 @@ public class CustomToNativeAppenderAdapter<T, C extends PropertyChange> implemen
 
     @Override
     public C calculateChanges(NodePair pair, JaversProperty property) {
-        T leftValue = sanitizeMissingProperty(pair.getLeftPropertyValue(property));
-        T rightValue = sanitizeMissingProperty(pair.getRightPropertyValue(property));
+        T leftValue = MissingProperty.unwrap(pair.getLeftPropertyValue(property));
+        T rightValue = MissingProperty.unwrap(pair.getRightPropertyValue(property));
 
         return delegate.compare(leftValue, rightValue, pair.createPropertyChangeMetadata(property), property).orElse(null);
-    }
-
-    /**
-     * {@link MissingProperty} is an internal marker for "property present on only one side".
-     * It must not leak into user {@link CustomPropertyComparator} implementations (see #1076).
-     */
-    @SuppressWarnings("unchecked")
-    private T sanitizeMissingProperty(Object value) {
-        if (value == MissingProperty.INSTANCE) {
-            return null;
-        }
-        return (T) value;
     }
 
     @Override

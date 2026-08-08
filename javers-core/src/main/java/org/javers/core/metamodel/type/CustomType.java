@@ -72,15 +72,7 @@ public class CustomType<T> extends ClassType implements CustomComparableType {
 
         @Override
         public Optional<C> compare(T left, T right, PropertyChangeMetadata metadata, Property property) {
-            return delegate.compare(sanitizeMissingProperty(left), sanitizeMissingProperty(right), metadata, property);
-        }
-
-        @SuppressWarnings("unchecked")
-        private T sanitizeMissingProperty(Object value) {
-            if (value == MissingProperty.INSTANCE) {
-                return null;
-            }
-            return (T) value;
+            return delegate.compare(MissingProperty.unwrap(left), MissingProperty.unwrap(right), metadata, property);
         }
     }
 }
