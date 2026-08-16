@@ -5,6 +5,7 @@ import org.javers.core.JaversBuilder;
 import org.javers.core.diff.changetype.PropertyChange;
 import org.javers.core.diff.changetype.PropertyChangeMetadata;
 import org.javers.core.diff.custom.CustomPropertyComparator;
+import org.javers.core.metamodel.property.MissingProperty;
 import org.javers.core.metamodel.property.Property;
 
 import java.lang.reflect.Type;
@@ -71,7 +72,7 @@ public class CustomType<T> extends ClassType implements CustomComparableType {
 
         @Override
         public Optional<C> compare(T left, T right, PropertyChangeMetadata metadata, Property property) {
-            return delegate.compare(left, right, metadata, property);
+            return delegate.compare(MissingProperty.unwrap(left), MissingProperty.unwrap(right), metadata, property);
         }
     }
 }

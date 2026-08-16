@@ -42,7 +42,7 @@ public class Atomic implements Serializable {
      * original Value
      */
     public Object unwrap() {
-        return MissingProperty.INSTANCE == value ? null : value;
+        return MissingProperty.unwrap(value);
     }
 
     @Override

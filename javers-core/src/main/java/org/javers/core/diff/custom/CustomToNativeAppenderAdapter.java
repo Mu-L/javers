@@ -3,6 +3,7 @@ package org.javers.core.diff.custom;
 import org.javers.core.diff.NodePair;
 import org.javers.core.diff.appenders.PropertyChangeAppender;
 import org.javers.core.diff.changetype.PropertyChange;
+import org.javers.core.metamodel.property.MissingProperty;
 import org.javers.core.metamodel.type.JaversProperty;
 import org.javers.core.metamodel.type.JaversType;
 
@@ -25,8 +26,8 @@ public class CustomToNativeAppenderAdapter<T, C extends PropertyChange> implemen
 
     @Override
     public C calculateChanges(NodePair pair, JaversProperty property) {
-        T leftValue = (T)pair.getLeftPropertyValue(property);
-        T rightValue = (T)pair.getRightPropertyValue(property);
+        T leftValue = MissingProperty.unwrap(pair.getLeftPropertyValue(property));
+        T rightValue = MissingProperty.unwrap(pair.getRightPropertyValue(property));
 
         return delegate.compare(leftValue, rightValue, pair.createPropertyChangeMetadata(property), property).orElse(null);
     }
